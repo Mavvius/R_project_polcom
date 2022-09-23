@@ -82,8 +82,8 @@ grid()
 par(mfrow=c(1,1))
 #ggplot(data = as.data.frame(lsimu$ETW[55,55,]))
 plot <- qplot(x=lsimu$ETW[55,55,] , y=(1:40), xlab = "temperature", ylab = "profondeur") +
-              scale_x_continuous(name = "temperature", limits = c(min,max)) +
-              scale_y_reverse()
+              scale_x_continuous(name = "temperature", limits = c(min,max)) + # Pour voir la variation il faut que les bornes soient cohérentes
+              scale_y_reverse() # Pour voir la thermocline avec la profondeur déscendante
 plot
 qplot()
 
