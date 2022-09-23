@@ -13,10 +13,10 @@ library(fields)
 # POLCOM-ERSEM
 # Janvier 1985
 
-dirpolcom<-"D:/Etudiants/alternance/data/"
+dirpolcom<-"data/"
 list.files(dirpolcom)
 
-ncf<-nc_open(paste0(dirpolcom,"CERES_outputs_IFREMER_Aug22.hist.1985.01.nc"))
+ncf<-nc_open(paste0(dirpolcom,"CERES_outputs_IFREMER_Aug22.rcp85.2020.07.nc"))
 
 nm<-attributes(ncf$var)$names
 nm
@@ -50,9 +50,9 @@ vard
 lat<-apply(lsimu$latbnd,2,mean)
 lon<-apply(lsimu$lonbnd,2,mean)
 
-range(lat)
+range(lat) # X
 # [1] 43.0 58.9
-range(lon)
+range(lon) # Y
 # [1] -0.5  8.9
 
 #-----------------------------
@@ -70,11 +70,26 @@ image.plot(bd2,x=lon,y=lat,main='Depth (m)')
 # Temperature
 range(lsimu$ETW,na.rm=T)
 ncf$var$ETW$units
-par(mfrow=c(1,2))
+par(mfrow=c(1,2),xpd=TRUE)
 # SST
+
 image.plot(lsimu$ETW[,,1],x=lon,y=lat,main='SST (?C)')
+grid(nx=210, ny=160)
+
 # SBT
-image.plot(lsimu$ETW[,,40],x=lon,y=lat,main='SBT (?C)')
+grid()
+
+par(mfrow=c(1,1))
+#ggplot(data = as.data.frame(lsimu$ETW[55,55,]))
+plot <- qplot(x=lsimu$ETW[55,55,] , y=(1:40), xlab = "temperature", ylab = "profondeur") +
+              scale_x_continuous(name = "temperature", limits = c(min,max)) +
+              scale_y_reverse()
+plot
+qplot()
+
+max<-  max(lsimu$ETW[55,55,])
+min<-  min(lsimu$ETW[55,55,])
+
 
 #-----------------------------
 # Biomasses (concentrations /m3 or /m2)

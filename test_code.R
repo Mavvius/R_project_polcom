@@ -57,7 +57,8 @@ for (i in seq_along(ncf_names)){
   temp <- assign(ncf_names[[i]], nc_open(paste0(data,polcom_files[i]))) # Assigne ncf[i] on ouvre le ncdf et on lui donne le bon nom
   assign(nm_names[[i]], attributes(temp$var)$names) # On extrait les attributs # 
   tnm <- assign(nm_names[[i]], attributes(temp$var)$names)
-  assign(lsimu_names[[i]], lapply(tnm,ncvar_get,nc=temp))
+  assign(lsimu_names[[i]], lapply(lapply(tnm,ncvar_get,nc=temp), missvalf))
 }
+
 
 
