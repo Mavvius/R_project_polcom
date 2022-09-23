@@ -38,6 +38,8 @@ lsimu<-lapply(lsimu,missvalf)
 #-----------------------------
 # variables
 
+## Fonctions cosmétiques qui permettent d'extraire les noms complets des variables et les unités.  
+
 var_unit<-function(x){return(ncf$var[[x]]$units)}
 var_lname<-function(x){return(ncf$var[[x]]$longname)}
 vard<-cbind.data.frame(nm=nm,longname=sapply(nm,var_lname),units=sapply(nm,var_unit),
@@ -47,9 +49,10 @@ vard
 
 #-----------------------------
 # coordinates
+## variable utile pour avoir les cartes complètes Pas utiles autrement
 lat<-apply(lsimu$latbnd,2,mean)
 lon<-apply(lsimu$lonbnd,2,mean)
-
+?apply()
 range(lat) # X
 # [1] 43.0 58.9
 range(lon) # Y
@@ -79,18 +82,20 @@ grid(nx=210, ny=160)
 # SBT
 grid()
 
-par(mfrow=c(1,1))
-#ggplot(data = as.data.frame(lsimu$ETW[55,55,]))
-plot <- qplot(x=lsimu$ETW[55,55,] , y=(1:40), xlab = "temperature", ylab = "profondeur") +
-              scale_x_continuous(name = "temperature", limits = c(min,max)) + # Pour voir la variation il faut que les bornes soient cohérentes
-              scale_y_reverse() # Pour voir la thermocline avec la profondeur déscendante
-plot
-qplot()
-
 max<-  max(lsimu$ETW[55,55,])
 min<-  min(lsimu$ETW[55,55,])
 
 
+par(mfrow=c(1,1))
+#ggplot(data = as.data.frame(lsimu$ETW[55,55,]))
+plot <- qplot(x=lsimu$ETW[55,55,] , y=(1:40), xlab = "temperature", ylab = "profondeur") +
+              scale_x_continuous(name = "temperature", limits = c(min,max)) + # Pour voir la variation il faut que les bornes soient cohérentes
+              scale_y_reverse() + # Pour voir la thermocline avec la profondeur déscendante
+#              geom_smooth(method = "gam") # L'equation qui fit les points pas necessaire mais bon.
+plot
+
+
+?geom_smooth
 #-----------------------------
 # Biomasses (concentrations /m3 or /m2)
 par(mfrow=c(2,2))
