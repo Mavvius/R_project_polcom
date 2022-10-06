@@ -12,6 +12,8 @@ library(ncdf4)
 library(fields)
 library(dplyr)
 library(tidyr)
+source("scripts/fonction_conversion_coordonnee.R")
+
 # POLCOM-ERSEM
 # Janvier 1985
 ################################################################################
@@ -40,11 +42,13 @@ lsimu<-lapply(lsimu,missvalf)
 ################################################################################
 
 vertical_profile <- function(simulation, parameter, longitude, latitude, xlab = parameter, ylab = "Depth" ){
-  measure <- simulation[[parameter]][longitude,latitude,]
+  coor_convertie <- conversion_coordonnee(longitude, latitude)
+  return(coor_convertie)
+  measure <- simulation[[parameter]][coor_convertie[1],coor_convertie[2],]
   max<- max(measure)
   min<- min(measure)  
   par(mfrow=c(1,1))
-  plot <- qplot(x=measure, y=simulation$depth[longitude,latitude,], xlab = xlab, ylab = ylab) + # Pour voir la thermocline avec la profondeur déscendante en prenant les vraies valeurs pas besoin d'inverser la courbe
+  plot <- qplot(x=measure, y=simulation$depth[coor_convertie[1],coor_convertie[2],], xlab = xlab, ylab = ylab) + # Pour voir la thermocline avec la profondeur déscendante en prenant les vraies valeurs pas besoin d'inverser la courbe
     scale_x_continuous(name = xlab, limits = c(min,max))+  # Pour voir la variation il faut que les bornes soient cohérentes
                                       
      geom_line() # L'equation qui fit les points pas necessaire mais bon.
@@ -52,8 +56,8 @@ vertical_profile <- function(simulation, parameter, longitude, latitude, xlab = 
 }
 
 
-vertical_profile(lsimu, "ETW", longitude = 55, latitude = 55, xlab = "Temperatour")
-
+vertical_profile(lsimu, "ETW", longitude =1 , latitude = 43, xlab = "Temperatour")
+range(lsimu$lonbnd)
 lsimu$depth[120,120,]
 lsimu$pdepth[120,120,]
 
