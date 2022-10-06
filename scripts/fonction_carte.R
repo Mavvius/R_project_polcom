@@ -12,6 +12,7 @@ library(ncdf4)
 library(fields)
 library(dplyr)
 library(tidyr)
+source("scripts/fonction_conversion_coordonnee.R")
 # POLCOM-ERSEM
 # Janvier 1985
 ################################################################################
@@ -52,7 +53,3 @@ map_profile <- function(simulation, parameter,depth = 0,  main = "Titre"){
 
 map_profile(simulation =  lsimu, parameter = "P1c", depth = 40,main = "surface_T")
 
-lat<-apply(lsimu$latbnd,2,mean)
-lon<-apply(lsimu$lonbnd,2,mean)
-image.plot(lsimu$ETW[,,1],x=lon,y=lat,main='SST (C°)')
-grid(nx=max(lat), ny=max(lon))
