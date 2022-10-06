@@ -1,5 +1,5 @@
 ################################################################################
-# Le but de la fonction est de pouvoir visualiser des profils verticaux
+# Le but de la fonction est de pouvoir visualiser des cartes de paramètres. 
 # en entrant le paramètre et les coordonnées.
 ################################################################################
 graphics.off()
@@ -39,16 +39,20 @@ lsimu<-lapply(lsimu,missvalf)
 ################################################################################
 ################################################################################
 
-vertical_profile <- function(simulation, parameter, longitude, 
-                             latitude, depth = 0 ,  xlab = parameter, ylab = "Depth" ){
-  measure <- simulation[[parameter]][longitude,latitude,]
-  max<- max(measure)
-  min<- min(measure)  
+map_profile <- function(simulation, parameter,depth = 0,  main = "Titre"){
+  measure <- simulation[[parameter]][,,depth]
+    # Limits of the map. 
+  lat<-apply(lsimu$latbnd,2,mean)
+  lon<-apply(lsimu$lonbnd,2,mean)
+    #plot
   par(mfrow=c(1,1))
-  plot <- qplot(x=measure, y=simulation$depth[longitude,latitude,], xlab = xlab, ylab = ylab) + # Pour voir la thermocline avec la profondeur déscendante en prenant les vraies valeurs pas besoin d'inverser la courbe
-    scale_x_continuous(name = xlab, limits = c(min,max))+  # Pour voir la variation il faut que les bornes soient cohérentes
-    
-    geom_line() # L'equation qui fit les points pas necessaire mais bon.
-  return(plot)
+  plot <- image.plot(measure, x=lon, y=lat, main = main)
+#  return(plot)
 }
 
+map_profile(simulation =  lsimu, parameter = "P1c", depth = 40,main = "surface_T")
+
+lat<-apply(lsimu$latbnd,2,mean)
+lon<-apply(lsimu$lonbnd,2,mean)
+image.plot(lsimu$ETW[,,1],x=lon,y=lat,main='SST (C°)')
+grid(nx=max(lat), ny=max(lon))
