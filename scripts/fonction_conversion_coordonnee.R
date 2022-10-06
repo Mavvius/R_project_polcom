@@ -49,7 +49,7 @@ conversion_coordonnee <- function(simulation, latitude, longitude, depth){
      # Find the nearest value rounded up for both coordinates
    case_lat <- which.min(abs(lat - latitude))
    case_lon <- which.min(abs(lon - longitude))
-   return(c(lat[case_lat], lon[case_lon]))
+   #return(c(lat[case_lat], lon[case_lon]))
    return(c(case_lat, case_lon))
   }
 }
