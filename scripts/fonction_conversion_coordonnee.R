@@ -37,27 +37,51 @@ missvalf<-function(x){
 }
 lsimu<-lapply(lsimu,missvalf)
 ################################################################################
-lsimu$latbnd[55]
-lsimu$lonbnd[55]
-
-coor <- c(lsimu$latbnd,lsimu$lonbnd)
-coor[1:10]
-range(lsimu$latbnd)
-  # Find the nearest value of something
-  # https://stackoverflow.com/questions/43472234/fastest-way-to-find-nearest-value-in-vector
-which.min(abs(lsimu$latbnd - 47.72))
-
-lsimu$latbnd[96]
-
-
-dim(lsimu$lonbnd)
-lsimu$depth
 conversion_coordonnee <- function(simulation, latitude, longitude, depth){
+    #Extract the values 
   lat <- simulation[["latbnd"]]
   lon <- simulation[["lonbnd"]]
-  case_lat <- which.min(abs(lat - latitude))
-  case_lon <- which.min(abs(lon - longitude))
-  return(c(lat[case_lat], lon[case_lon]))
-  return(c(case_lat, case_lon))
+    # Check if the values are within boundaries of the table
+  if(!between(latitude, min(lat), max(lat)) | !between(longitude, min(lon), max(lon))){
+    return("Please enter latitude values between [42.95-58.95] 
+           and longitude values between [-12.05 8.95]")
+   }else{
+     # Find the nearest value rounded up for both coordinates
+   case_lat <- which.min(abs(lat - latitude))
+   case_lon <- which.min(abs(lon - longitude))
+   return(c(lat[case_lat], lon[case_lon]))
+   return(c(case_lat, case_lon))
+  }
 }
-conversion_coordonnee(lsimu, latitude = 43.21, longitude = -1)
+
+################################################################################
+# conversion_coordonnee(lsimu, latitude = 44.30, longitude = 5)
+# test_fun <- function( latitude, longitude, sim, org) {
+#   if(between(latitude, 9.3, 14 ) | between(longitude, 25, 42)){
+#     return("nop")
+#   }else{
+#     return("yup")
+#   }
+# }
+# 
+# 
+# test_fun(latitude = 12, longitude=28)
+# 
+# conversion_coordonnee(lsimu, latitude = 64, longitude = -14)
+# 
+# between(64, 42.9, 59)
+# range(lsimu$latbnd)# 42.95 58.95
+# range(lsimu$lonbnd)# -12.05 8.95
+# 
+# coor <- c(lsimu$latbnd,lsimu$lonbnd)
+# coor[1:10]
+# range(lsimu$latbnd)
+# # Find the nearest value of something
+# # https://stackoverflow.com/questions/43472234/fastest-way-to-find-nearest-value-in-vector
+# which.min(abs(lsimu$latbnd - 47.72))
+# 
+# lsimu$latbnd[96]
+# 
+# min(lsimu$lonbnd)
+# 
+# lsimu$depth
