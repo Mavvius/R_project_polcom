@@ -40,8 +40,24 @@ lsimu<-lapply(lsimu,missvalf)
 lsimu$latbnd[55]
 lsimu$lonbnd[55]
 
+coor <- c(lsimu$latbnd,lsimu$lonbnd)
+coor[1:10]
+range(lsimu$latbnd)
+  # Find the nearest value of something
+  # https://stackoverflow.com/questions/43472234/fastest-way-to-find-nearest-value-in-vector
+which.min(abs(lsimu$latbnd - 47.72))
 
+lsimu$latbnd[96]
+
+
+dim(lsimu$lonbnd)
 lsimu$depth
 conversion_coordonnee <- function(simulation, latitude, longitude, depth){
-  
+  lat <- simulation[["latbnd"]]
+  lon <- simulation[["lonbnd"]]
+  case_lat <- which.min(abs(lat - latitude))
+  case_lon <- which.min(abs(lon - longitude))
+  return(c(lat[case_lat], lon[case_lon]))
+  return(c(case_lat, case_lon))
 }
+conversion_coordonnee(lsimu, latitude = 43.21, longitude = -1)
