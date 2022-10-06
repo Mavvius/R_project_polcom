@@ -62,19 +62,3 @@ lsimu$ETW[120,120,]
 
 ################################################################################
 
-
-lsimu$x
-lsimu$x
-
-
-max<-  max(lsimu$ETW[55,55,])
-min<-  min(lsimu$ETW[55,55,])
-
-
-par(mfrow=c(1,1))
-plot <- qplot(x=lsimu$ETW[55,55,] , y=lsimu$depth[55,55,], xlab = "temperature", ylab = "profondeur") +
-  scale_x_continuous(name = "temperature", limits = c(min,max))  # Pour voir la variation il faut que les bornes soient cohérentes
-  #scale_y_reverse() # Pour voir la thermocline avec la profondeur déscendante
-  #              geom_smooth(method = "gam") # L'equation qui fit les points pas necessaire mais bon.
-plot
-
