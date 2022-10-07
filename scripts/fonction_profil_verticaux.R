@@ -42,13 +42,24 @@ lsimu<-lapply(lsimu,missvalf)
 ################################################################################
 
 vertical_profile <- function(simulation, parameter, longitude, latitude, xlab = parameter, ylab = "Depth" ){
-  coor_convertie <- conversion_coordonnee(longitude, latitude)
-  return(coor_convertie)
+  
+    # Convert geographic coordinates into indices and checks that it's in bounds
+  coor_convertie <- conversion_coordonnee(simulation,longitude, latitude)
+  if (is.character(coor_convertie)) return(coor_convertie)
   measure <- simulation[[parameter]][coor_convertie[1],coor_convertie[2],]
+
+    # Check if there are values measured for the parameters
+  if (NA %in% measure){
+    return("You are on land, please try other coordinates")
+  }
+   # Boundaries of the plot
   max<- max(measure)
   min<- min(measure)  
+
+     # Extract the depth point
+  depth_points <- simulation[["depth"]][coor_convertie[2],coor_convertie[1],]
   par(mfrow=c(1,1))
-  plot <- qplot(x=measure, y=simulation$depth[coor_convertie[1],coor_convertie[2],], xlab = xlab, ylab = ylab) + # Pour voir la thermocline avec la profondeur déscendante en prenant les vraies valeurs pas besoin d'inverser la courbe
+  plot <- qplot(x=measure, y=depth_points, xlab = xlab, ylab = ylab) + # Pour voir la thermocline avec la profondeur déscendante en prenant les vraies valeurs pas besoin d'inverser la courbe
     scale_x_continuous(name = xlab, limits = c(min,max))+  # Pour voir la variation il faut que les bornes soient cohérentes
                                       
      geom_line() # L'equation qui fit les points pas necessaire mais bon.
@@ -56,13 +67,41 @@ vertical_profile <- function(simulation, parameter, longitude, latitude, xlab = 
 }
 
 
-vertical_profile(lsimu, "ETW", longitude =1 , latitude = 43, xlab = "Temperatour")
+
+
+
+vertical_profile(lsimu, "ETW", longitude =47 , latitude = -9.35, xlab = "Temperatour")
+
+vertical_profile_ori(lsimu, "ETW", longitude =55 , latitude = 55, xlab = "Temperatour")
+
+
+64 out of bounds
+47 nanana
+
+45.65 -9.35 ok
+
 range(lsimu$lonbnd)
-lsimu$depth[120,120,]
+lsimu$ETW[95,140,]
 lsimu$pdepth[120,120,]
 
 
 lsimu$ETW[120,120,]
 
 ################################################################################
+
+#########################Cimetiere des bouts de codes ##########################
+
+# vertical_profile_ori <- function(simulation, parameter, longitude, latitude, xlab = parameter, ylab = "Depth" ){
+#   # coor_convertie <- conversion_coordonnee(simulation,longitude, latitude)
+#   # return(coor_convertie[1])
+#   measure <- simulation[[parameter]][latitude,longitude,]
+#   max<- max(measure)
+#   min<- min(measure)  
+#   par(mfrow=c(1,1))
+#   plot <- qplot(x=measure, y=simulation$depth[latitude,longitude,], xlab = xlab, ylab = ylab) + # Pour voir la thermocline avec la profondeur déscendante en prenant les vraies valeurs pas besoin d'inverser la courbe
+#     scale_x_continuous(name = xlab, limits = c(min,max))+  # Pour voir la variation il faut que les bornes soient cohérentes
+#     
+#     geom_line() # L'equation qui fit les points pas necessaire mais bon.
+#   return(plot)
+# }
 
