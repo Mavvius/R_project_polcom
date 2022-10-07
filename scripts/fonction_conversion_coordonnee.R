@@ -37,26 +37,33 @@ missvalf<-function(x){
 }
 lsimu<-lapply(lsimu,missvalf)
 ################################################################################
-conversion_coordonnee <- function(simulation, latitude, longitude, depth){
+conversion_coordonnee <- function(simulation, longitude, latitude, depth){
     #Extract the values 
   lat <- simulation[["latbnd"]]
   lon <- simulation[["lonbnd"]]
     # Check if the values are within boundaries of the table
   if(!between(latitude, min(lat), max(lat)) | !between(longitude, min(lon), max(lon))){
-    return("Please enter latitude values between [42.95-58.95] and longitude values between [-12.05 8.95]")
+    return("Please enter longitude values between [-12.05 8.95] and latitude values between [42.95-58.95] ")
    }else{
      # Find the nearest value rounded up for both coordinates
    case_lat <- which.min(abs(lat - latitude))
    case_lon <- which.min(abs(lon - longitude))
    #return(c(lat[case_lat], lon[case_lon]))
-   return(c(case_lat, case_lon))
+   return(c(case_lon, case_lat))
   }
 }
 
-lsimu$latbnd[55]
-################################################################################
- conversion_coordonnee(lsimu, latitude = 4.65, longitude = -5)
+conversion_coordonnee(lsimu, longitude = -4, latitude = 43.65)
 
+lsimu$ETW[160,15,]
+lsimu$lonbnd
+#
+
+
+################################################################################
+ # conversion_coordonnee(lsimu, latitude = 4.65, longitude = -5)
+
+# lsimu$latbnd[55]
 
 # test_fun <- function( latitude, longitude, sim, org) {
 #   if(between(latitude, 9.3, 14 ) | between(longitude, 25, 42)){
