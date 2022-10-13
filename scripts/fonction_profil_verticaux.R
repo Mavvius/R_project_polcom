@@ -12,7 +12,12 @@ library(ncdf4)
 library(fields)
 library(dplyr)
 library(tidyr)
+library(gridExtra)
 source("scripts/fonction_conversion_coordonnee.R")
+source("scripts/fonction_carte.R")
+source("scripts/fonction_vous_etes_ici.R")
+
+
 
 # POLCOM-ERSEM
 # Janvier 1985
@@ -41,37 +46,39 @@ lsimu<-lapply(lsimu,missvalf)
 ################################################################################
 ################################################################################
 
-vertical_profile <- function(simulation, parameter, longitude, latitude, xlab = parameter, ylab = "Depth" ){
+vertical_profile <- function(simulation, parameter, longitude, latitude, xlab = parameter, ylab = "Depth", position = F){
   
     # Convert geographic coordinates into indices and checks that it's in bounds
   coor_convertie <- conversion_coordonnee(simulation,longitude = longitude, latitude = latitude)
   if (is.character(coor_convertie)) return(coor_convertie)
+
   measure <- simulation[[parameter]][coor_convertie[1],coor_convertie[2],]
-#  return(measure)
-    # Check if there are values measured for the parameters
+
+      # Check if there are values measured for the parameters
   if (NA %in% measure){
-    return("You are on land, please try other coordinates")
+    map_position(simulation = simulation,longitude, latitude)
+    return("You are out of the boundaries of the model, please try other coordinates")
   }
    # Boundaries of the plot
   max<- max(measure)
   min<- min(measure)  
      # Extract the depth point
   depth_points <- simulation[["depth"]][coor_convertie[1],coor_convertie[2],]
-  #return(depth_points)
   
-  par(mfrow=c(1,1))
+  # if (position = T){
+  #   par(mfrow= c(2,1))
+  #   map_position(simulation = simulation,longitude, latitude)
+  # }
+  par(mfrow= c(2,1))
+  #mark <- map_position(simulation = simulation,longitude, latitude)
   plot <- qplot(x=measure, y=depth_points, xlab = xlab, ylab = ylab) + # Pour voir la thermocline avec la profondeur déscendante en prenant les vraies valeurs pas besoin d'inverser la courbe
     scale_x_continuous(name = xlab, limits = c(min,max))+  # Pour voir la variation il faut que les bornes soient cohérentes
-                                      
      geom_line() # L'equation qui fit les points pas necessaire mais bon.
+  #ob <- grid.arrange(plot, mark, ncol = 2)
   return(plot)
 }
 
-
-
-
-
-vertical_profile(lsimu, "ETW", longitude = -7.15 , latitude = 47, xlab = "Temperatour")
+vertical_profile(lsimu, "ETW", longitude = -4.15 , latitude = 47, xlab = "Temperatuer", position = T)
 
 #vertical_profile(lsimu, "ETW", longitude =43.6 , latitude = -4, xlab = "Temperatour")
 
