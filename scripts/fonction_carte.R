@@ -12,6 +12,12 @@ library(ncdf4)
 library(fields)
 library(dplyr)
 library(tidyr)
+library(ggmap)
+library(maps)
+library(mapdata)
+library(sf)
+library(tidyverse)
+library(raster)
 source("scripts/fonction_conversion_coordonnee.R")
 # POLCOM-ERSEM
 # Janvier 1985
@@ -53,3 +59,45 @@ map_profile <- function(simulation, parameter,depth = 0,  main = "Titre"){
 
 map_profile(simulation =  lsimu, parameter = "P1c", depth = 40,main = "surface_T")
 
+################################################################################
+# Select a subregion
+single_county <- subset(ut_county, subregion=="utah")
+
+# Fill the selected subregion with a predefined color and
+# plot a colored point with a specified long. and lat.
+ut_base + theme_void() +
+  geom_polygon(data = ut_county, fill = NA, color = "white") +
+  geom_polygon(color = "black", fill = NA) +
+  geom_polygon(data = single_county, fill = "red", color = "white") +
+  geom_point(x=-111.8, y=40.2, col="blue", size=3)
+
+
+map_data(c(lsimu[[latbnd]], lsimu[[lonbnd] ))
+lon
+lsimu$latbnd
+str(lsimu)
+
+
+################################################################################
+
+x<- 1:10
+y<- 1:15
+z<- outer( x,y,"+") 
+image.plot(x,y,z) 
+
+# or 
+obj<- list( x=x,y=y,z=z)
+image.plot(bd2, legend.lab="Sverdrups")
+
+################################################################ 
+# the next sequence of examples explain how to quickly 
+# adpat this basic plot to include morre features
+# In another direction see the very last example where 
+# we use many of the setting in base R graphic to mimic a 
+# (beautiful) ggplot version. 
+###############################################################
+#
+# add some points on diagonal using standard plot function
+#(with some clipping beyond 10 anticipated)
+
+points( 0.9, 0.4, pch="+", cex=0.75, col = "red")
