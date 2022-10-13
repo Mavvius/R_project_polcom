@@ -57,7 +57,7 @@ vertical_profile <- function(simulation, parameter, longitude, latitude, xlab = 
   min<- min(measure)  
      # Extract the depth point
   depth_points <- simulation[["depth"]][coor_convertie[1],coor_convertie[2],]
-  return(depth_points)
+  #return(depth_points)
   
   par(mfrow=c(1,1))
   plot <- qplot(x=measure, y=depth_points, xlab = xlab, ylab = ylab) + # Pour voir la thermocline avec la profondeur déscendante en prenant les vraies valeurs pas besoin d'inverser la courbe
@@ -71,7 +71,7 @@ vertical_profile <- function(simulation, parameter, longitude, latitude, xlab = 
 
 
 
-vertical_profile(lsimu, "ETW", longitude =-4 , latitude = 43.65, xlab = "Temperatour")
+vertical_profile(lsimu, "ETW", longitude = -7.15 , latitude = 47, xlab = "Temperatour")
 
 #vertical_profile(lsimu, "ETW", longitude =43.6 , latitude = -4, xlab = "Temperatour")
 
