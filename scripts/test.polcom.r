@@ -66,10 +66,11 @@ range(lsimu$depth,na.rm=T)
 # bottom depth
 bd<-apply(lsimu$depth,1:2,min)
 bd2<-bd
+bd[1,3]
+table(bd>-100)
 bd2[bd<(-200)]<-(-200)
 dev.new()
 image.plot(bd2,x=lon,y=lat,main='Depth (m)') 
-points(x = -9 , y = 47, pch = "+", cex=1, col="blue")
 dev.off()
 #-----------------------------
 # Temperature
@@ -78,11 +79,17 @@ ncf$var$ETW$units
 par(mfrow=c(1,1),xpd=TRUE)
 # SST
 dev.new()
-imagePlot(lsimu$ETW[,,1],x=lon,y=lat,main='SST (°C)')
+###########################################################################
+# Bon plot pour le vous etes ici
+#imagePlot(lsimu$P1c[,,1],x=lon,y=lat,main='SST (°C)')
+#points(x = -9 , y = 47, pch = "*", cex=1.5, col="dark red")
+###########################################################################
 xline(lon)
 yline(lat)
 dev.off()
 grid(nx=210, ny=160)
+
+lsimu$parea
 
 # SBT
 grid()
