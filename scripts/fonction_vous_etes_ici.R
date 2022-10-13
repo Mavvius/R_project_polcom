@@ -49,7 +49,7 @@ map_position <- function(simulation, longitude, latitude, main = "* You are here
     plot <- image(measure, x=lon, y=lat, main = main, col = "blue")
     #plot <- image.plot(measure, x=lon, y=lat, main = main, legend.cex = 0)
     points(x = longitude , y = latitude, pch = "*", cex=1.5, col="dark red")
-    #  return(plot)
+    return(plot)
   }
-map_position(lsimu, longitude = -8, latitude = 47)
-
+lol <- map_position(lsimu, longitude = -8, latitude = 50)
+lol
