@@ -53,7 +53,7 @@ conversion_coordonnee <- function(simulation, longitude, latitude, depth){
   }
 }
 
-#conversion_coordonnee(lsimu, longitude = -8, latitude = 47)
+#conversion_coordonnee(lsimu, longitude = -9, latitude = 58)
 # 
 # lsimu$ETW[1,1,]
 # lsimu$lonbnd
