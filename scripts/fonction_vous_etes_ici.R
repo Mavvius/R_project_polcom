@@ -51,5 +51,5 @@ map_position <- function(simulation, longitude, latitude, main = "* You are here
     points(x = longitude , y = latitude, pch = "*", cex=1.5, col="dark red")
     return(plot)
   }
-lol <- map_position(lsimu, longitude = -8, latitude = 50)
+lol <- map_position(lsimu, longitude = -5, latitude = 50)
 lol
