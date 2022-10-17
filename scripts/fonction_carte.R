@@ -58,9 +58,19 @@ map_profile <- function(simulation, parameter,depth = 0,  main = "Titre"){
 }
 
 
+map_profile(simulation =  lsimu, parameter = "B1c", depth = 40, main = "carte B1c")
 
-map_profile(simulation =  lsimu, parameter = "P1c", depth = 1)
-map_profile(simulation = lsimu , "P1c", depth = 1, main = "* You are here")
+
+
+
+
+
+
+
+
+
+
+
 
 ################################################################################
 # Select a subregion
