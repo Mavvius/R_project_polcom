@@ -62,7 +62,7 @@ range(lon) # Y
 # Depth
 range(lsimu$depth,na.rm=T)
 # [1] -2426.9699707    -0.1263089
-
+head(lsimu$depth)
 # bottom depth
 bd<-apply(lsimu$depth,1:2,min)
 bd2<-bd
