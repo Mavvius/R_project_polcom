@@ -67,8 +67,9 @@ head(lsimu$depth)
 bd<-apply(lsimu$depth,1:2,min)
 bd2<-bd
 bd[1,3]
-table(bd>-100)
+table(bd>-100) # borner les profondeurs pour voir les petites profondeurs
 bd2[bd<(-200)]<-(-200)
+
 dev.new()
 image.plot(bd2,x=lon,y=lat,main='Depth (m)') 
 dev.off()
@@ -107,13 +108,14 @@ plot <- qplot(x=lsimu$ETW[55,55,] , y=(1:40), xlab = "temperature", ylab = "prof
 plot
 
 
-?geom_smooth
 #-----------------------------
 # Biomasses (concentrations /m3 or /m2)
 par(mfrow=c(2,2))
 
 # Benthos
 benthos<-lsimu$Y2c+lsimu$Y3c+lsimu$Y4c
+
+dim(lsimu$Y2c)
 image.plot(benthos,x=lon,y=lat,main='Benthos (mgC/m2)')
 
 # cell height
