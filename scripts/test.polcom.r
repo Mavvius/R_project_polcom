@@ -70,8 +70,13 @@ bd[1,3]
 table(bd>-100) # borner les profondeurs pour voir les petites profondeurs
 bd2[bd<(-200)]<-(-200)
 
+
+phyto1 <- apply(lsimu$P1c, c(1:2),sum)
+truc<- sapply(phyto1, max, na.rm = T)
+max(truc[!is.infinite(truc)])
+length(truc)
 dev.new()
-image.plot(bd2,x=lon,y=lat,main='Depth (m)') 
+image.plot(phyto1,x=lon,y=lat,main='Depth (m)') 
 dev.off()
 #-----------------------------
 # Temperature
