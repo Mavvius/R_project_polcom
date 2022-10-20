@@ -59,3 +59,24 @@ apply(température, c(1:2),sum) # Ca fonctionne
 sum(température[6,6,])
 
 integration_verticale <- function(simulation, parameter, above, below, area )
+  
+cell_depth <- lsimu$pdepth
+cell_depth[62,28,]
+  
+dim(lsimu$pdepth)
+# select the interval that's interesting then apply.
+  
+  
+### Correct  way to write function  
+#   fooBar <- function(x,y){
+#     if(missing(y)) {
+#       x
+#     } else {
+#       x + y
+#     }
+#   }
+# 
+# fooBar(3,1.5)
+# # [1] 4.5
+# fooBar(3)
+# # [1] 3  
