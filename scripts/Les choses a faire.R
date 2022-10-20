@@ -6,6 +6,7 @@
 # - Fonction de conversion de profondeur. parametre profondeur (en m). en cases "bottom" 40 "surface" 1
 # - Pour la somme etape 1 -> trouver la case la plus proche
 #                 etape 2 -> trouver la distance la plus proche et ponderer le morceau pris sur la vraie taille de la case. 
+#- donner la possiblité d'exxtraire la donnée, brut ou transformée plutot qu'un plot
 ##################
 
 
