@@ -67,7 +67,7 @@ head(lsimu$depth)
 bd<-apply(lsimu$depth,1:2,min)
 bd2<-bd
 bd[1,3]
-table(bd>-100) # borner les profondeurs pour voir les petites profondeurs
+table(bd>-200) # borner les profondeurs pour voir les petites profondeurs
 bd2[bd<(-200)]<-(-200)
 
 table(phyto1 > 2000)
@@ -78,9 +78,11 @@ phyto1 <- apply(lsimu$Z4c, c(1:2),sum)
 truc<- sapply(phyto1, max, na.rm = T)
 max(truc[!is.infinite(truc)])
 length(truc)
+
 dev.new()
-image.plot(zop,x=lon,y=lat,main='Depth (m)') 
+image.plot(bd2[42:111, 1:51],x=lon[42:111],y=lat[1:51],main='Depth (m)') 
 dev.off()
+dim(bd2)
 #-----------------------------
 # Temperature
 range(lsimu$ETW,na.rm=T)
@@ -136,5 +138,5 @@ image.plot(phytop,x=lon,y=lat,main='Phytoplankton (mgC/m2)')
 
 # Zooplankton
 zoopm3<-lsimu$Z4c+lsimu$Z5c+lsimu$Z6c
-zoop<-apply(zoopm3*lsimu$pdepth,1:2,sum,na.rm=T)# biomass integrated over the whole water column
-image.plot(benthos,x=lon,y=lat,main='Zooplankton (mgC/m2)')
+zoop<-apply(zoopm3*lsimu$pdepth,1:2,sum)# biomass integrated over the whole water column
+image.plot(zoop,x=lon,y=lat,main='Zooplankton (mgC/m2)')
