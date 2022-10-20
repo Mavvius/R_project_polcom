@@ -46,10 +46,12 @@ map_position <- function(simulation, longitude, latitude, main = "* You are here
     #plot
     par(mfrow=c(1,1))
     measure <- simulation[["P1c"]][,,1]
-    plot <- image(measure, x=lon, y=lat, main = main, col = "blue")
+    plot <- image(measure, x=lon, y=lat, main = main, col = "grey")
     #plot <- image.plot(measure, x=lon, y=lat, main = main, legend.cex = 0)
     points(x = longitude , y = latitude, pch = "*", cex=1.5, col="dark red")
     return(plot)
   }
-lol <- map_position(lsimu, longitude = -5, latitude = 50)
+lol <- map_position(lsimu, longitude = -9.35, latitude = 45.65)
 lol
+lsimu$depth[55,55,]
+dev.new()
