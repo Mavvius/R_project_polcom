@@ -37,8 +37,9 @@ missvalf<-function(x){
 }
 lsimu<-lapply(lsimu,missvalf)
 ################################################################################
-conversion_coordonnee <- function(simulation, longitude, latitude, depth){
-    #Extract the values 
+conversion_coordonnee <- function(simulation, longitude, latitude, depth=0){
+    # Extract the values 
+  if(depth > 0){depth <- -depth} # For now the depth is at 0 by default potential  future modif
   lat <- simulation[["latbnd"]][1,]
   lon <- simulation[["lonbnd"]][1,]
     # Check if the values are within boundaries of the table
@@ -48,12 +49,20 @@ conversion_coordonnee <- function(simulation, longitude, latitude, depth){
      # Find the nearest value rounded up for both coordinates
    case_lat <- which.min(abs(lat - latitude))
    case_lon <- which.min(abs(lon - longitude))
-   #return(c(lat[case_lat], lon[case_lon]))
-   return(c(case_lon, case_lat))
+   dep <- simulation[["depth"]][case_lon,case_lat,]
+   case_dep <- which.min(abs(dep - depth))
+
+   return(c(case_lon, case_lat, case_dep))
   }
 }
 
-#conversion_coordonnee(lsimu, longitude = -9, latitude = 58)
+conv <- conversion_coordonnee(lsimu, longitude = -5, latitude = 45.65, 10)
+conv[3]
+
+lsimu$depth[72,28,]
+
+which.min(abs(lsimu$depth[72,28,] - (10)))
+
 # 
 # lsimu$ETW[1,1,]
 # lsimu$lonbnd
