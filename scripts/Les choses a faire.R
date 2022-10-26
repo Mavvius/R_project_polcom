@@ -64,9 +64,77 @@ cell_depth <- lsimu$pdepth
 cell_depth[62,28,]
   
 dim(lsimu$pdepth)
+
+
+sum(lsimu$pdepth[121,121,][which(lsimu$depth[121,121,] > -100)])
+lol <- map_position(lsimu, longitude = -0, latitude = 55)
+conversion_coordonnee(lsimu, longitude = -0, latitude = 55)
+
+profond<- lsimu$pdepth[55,55,]
+
+index <- which(lsimu$depth[55,55,] > -100)
+which(lsimu$depth[55,55,]> -100)
+which(  < 100)
+
+
+
+sum(lsimu$pdepth[55,55,][index]) -100
+lsimu$pdepth[55,55,][length(index)-1]
+profond[28]
+profond[length(profond)]
+sum(profond)
+lsimu$depth[55,55,] > -100
 # select the interval that's interesting then apply.
+
+
+# protocole dans l'ordre
+lsimu$pdepth[55,55,] # la taille des cases a une coordonnées 
+lsimu$depth[55,55,] # La valeur a chaque point, représentant la moyenne de la case 
+sum(lsimu$pdepth[55,55,]) # Véritable profondeur pour un intervalle donné
+which(lsimu$depth[55,55,]> -100) # indices des profondeurs au dessus d'un seuil
+var(lsimu$pdepth[55,55,]) # verification que la taille des cases est uniques. 
+
+
+map_profile_integration <- function(simulation, parameter,depth = c('surface','bottom', numeric()), above = T ,  main = "Titre"){
   
-  
+  # test the depth parameter
+  #if(depth == "pierre") return("tu vois")
+  if(depth == "surface") depth <- 1
+    else if(depth == "bottom") depth <- 40
+    else if (is.numeric(depth) & abs(depth) < 4600){}
+    else return("no")
+  return(depth)
+}
+#   if(depth < 1) return("Please enter the depth (positive)")#   
+
+#   measure <- simulation[[parameter]][,,depth]
+# 
+#   apply(measure, c(1:2),sum)
+# 
+#   # Limits of the map.
+#   lat<-apply(lsimu$latbnd,2,mean)
+#   lon<-apply(lsimu$lonbnd,2,mean)
+#   #plot
+#   plot <- image.plot(measure, x=lon, y=lat, main = main)
+#   #  return(plot)
+ # }
+
+ c <- map_profile_integration(simulation =  lsimu, parameter = "pdepth", depth = "0", above = T, main = "carte B1c")
+c
+min(lsimu$depth, na.rm = T)
+  # Trouver les indices 
+  # si la derniere case + 1/2 x la taille de la case < 100 il faut ajouter une case
+  # Verfier dans le cas improbable ou la case proche de 99 ne dépasse pas 100
+  # 
+  # 
+  # 
+  # 
+  # 
+  # 
+## Pas besoin de s'embeter a verifier avec précision que cumsum est bon 
+## puisque, c'est le milieu de la case si la suivante est superieur a 100 
+##
+
 ### Correct  way to write function  
 #   fooBar <- function(x,y){
 #     if(missing(y)) {
