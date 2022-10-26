@@ -66,19 +66,19 @@ vertical_profile <- function(simulation, parameter, longitude, latitude, xlab = 
   depth_points <- simulation[["depth"]][coor_convertie[1],coor_convertie[2],]
   
   # if (position = T){
-  #   par(mfrow= c(2,1))
-  #   map_position(simulation = simulation,longitude, latitude)
+  #    #par(mfrow= c(2,1))
+  # #  position <- map_position(simulation = simulation,longitude, latitude)}
+  #   mark <- map_position(simulation = simulation,longitude, latitude)
   # }
-  par(mfrow= c(2,1))
-  #mark <- map_position(simulation = simulation,longitude, latitude)
-  plot <- qplot(x=measure, y=depth_points, xlab = xlab, ylab = ylab) + # Pour voir la thermocline avec la profondeur déscendante en prenant les vraies valeurs pas besoin d'inverser la courbe
+    plot <- qplot(x=measure, y=depth_points, xlab = xlab, ylab = ylab) + # Pour voir la thermocline avec la profondeur déscendante en prenant les vraies valeurs pas besoin d'inverser la courbe
     scale_x_continuous(name = xlab, limits = c(min,max))+  # Pour voir la variation il faut que les bornes soient cohérentes
      geom_line() # L'equation qui fit les points pas necessaire mais bon.
   #ob <- grid.arrange(plot, mark, ncol = 2)
   return(plot)
 }
 
-vertical_profile(lsimu, "ETW", longitude = -6 , latitude = 45.65, xlab = "Temperatuer", position = T)
+
+vertical_profile(lsimu, "ETW", longitude = -2 , latitude = 45.65, xlab = "Température", position = T)
 
 #vertical_profile(lsimu, "ETW", longitude =43.6 , latitude = -4, xlab = "Temperatour")
 
