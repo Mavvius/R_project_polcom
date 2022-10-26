@@ -80,7 +80,8 @@ max(truc[!is.infinite(truc)])
 length(truc)
 
 dev.new()
-image.plot(bd2[42:111, 1:51],x=lon[42:111],y=lat[1:51],main='Depth (m)') 
+image.plot(bd2,x=lon,y=lat,main='Depth (m)', xlab = "Longitude", ylab= "Latitude" )
+?image.plot
 dev.off()
 dim(bd2)
 #-----------------------------
