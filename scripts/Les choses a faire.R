@@ -74,7 +74,6 @@ profond<- lsimu$pdepth[55,55,]
 
 index <- which(lsimu$depth[55,55,] > -100)
 which(lsimu$depth[55,55,]> -100)
-which(  < 100)
 
 
 
@@ -89,39 +88,85 @@ lsimu$depth[55,55,] > -100
 
 # protocole dans l'ordre
 lsimu$pdepth[55,55,] # la taille des cases a une coordonnées 
-lsimu$depth[55,55,] # La valeur a chaque point, représentant la moyenne de la case 
+interval <- lsimu$depth[,1:100,] # La valeur a chaque point, représentant la moyenne de la case 
 sum(lsimu$pdepth[55,55,]) # Véritable profondeur pour un intervalle donné
-which(lsimu$depth[55,55,]> -100) # indices des profondeurs au dessus d'un seuil
+gc(reset = T)
+st<- Sys.time()
+test <- apply(interval, MARGIN = c(1:2),function(x)which(x> -100)) # indices des profondeurs au dessus d'un seuil
+end <- Sys.time()
+end - st
+
+
 var(lsimu$pdepth[55,55,]) # verification que la taille des cases est uniques. 
+max(abs(lsimu$depth), na.rm =T)
 
-
-map_profile_integration <- function(simulation, parameter,depth = c('surface','bottom', numeric()), above = T ,  main = "Titre"){
-  
-  # test the depth parameter
-  #if(depth == "pierre") return("tu vois")
-  if(depth == "surface") depth <- 1
-    else if(depth == "bottom") depth <- 40
-    else if (is.numeric(depth) & abs(depth) < 4600){}
-    else return("no")
-  return(depth)
-}
-#   if(depth < 1) return("Please enter the depth (positive)")#   
-
-#   measure <- simulation[[parameter]][,,depth]
-# 
-#   apply(measure, c(1:2),sum)
-# 
-#   # Limits of the map.
-#   lat<-apply(lsimu$latbnd,2,mean)
-#   lon<-apply(lsimu$lonbnd,2,mean)
-#   #plot
-#   plot <- image.plot(measure, x=lon, y=lat, main = main)
-#   #  return(plot)
+#     else if(depth == "bottom") {
+#       depth <- 40 
+#       return(map_profile(simulation =  simulation, parameter = parameter, depth = 40, main = main)
+#     }
+#     if (is.numeric(depth) & abs(depth) < max_depth){}
+#     else{ return("Wrong format or Out of bound. Depth must be under maximum depth")} # Poser la question pour le not 0
+#   return(depth)
+# }
+ #   if(depth < 1) return("Please enter the depth (positive)")#
+ # 
+ #  
+ #    measure <- simulation[[parameter]][,,depth] 
+ # 
+ #   apply(measure, c(1:2),sum)
+ # 
+ #   # Limits of the map.
+ #   lat<-apply(lsimu$latbnd,2,mean)
+ #   lon<-apply(lsimu$lonbnd,2,mean)
+ #   
+ #   plot <- image.plot(measure, x=lon, y=lat, main = main)
+ #   return(plot)
  # }
 
- c <- map_profile_integration(simulation =  lsimu, parameter = "pdepth", depth = "0", above = T, main = "carte B1c")
+map_profile_integration <- function(simulation, parameter,depth = c('surface','bottom', numeric()), 
+                                    above = T ,  main = "Titre"){
+  # test the depth parameter ## Fait comme ca pour l'instant. Mais trouver un meilleur moyen
+  if(is.character(depth)){
+    depth <- match.arg(depth)
+    switch (depth,
+      surface = depth <- 1,
+      bottom = depth <- 40,
+    )
+    return(map_profile(simulation =  simulation, parameter = parameter, depth = depth, main = main))
+  }
+  if(is.numeric(depth)){ 
+    depth <- abs(depth)
+    simu_depth <- abs(simulation[["depth"]])
+    max_depth <- max(abs(simulation[["depth"]]), na.rm = T)
+    if( depth > max_depth) return(c("Out of bounds, please enter depth below :", round(max_depth,2)))
+    cube_size <- simulation[["pdepth"]]
+    # return(simu_depth)
+    vecs_to_integrate <- apply(simu_depth, MARGIN = c(1:2) , function(x)which(x <  depth))# Les vecteur qui remplissent la condition de taille pour l'intégration. 
+    return(vecs_to_integrate)
+    }
+  }
+
+    
+c <- map_profile_integration(simulation =  lsimu, parameter = "pdepth", depth = 8,
+                             above = T, main = "carte B1c")
+c
+
+p <- geom_freqpoly(mean(lsimu$pdepth, na.rm =T), )
+p
+
+t<- c('surface','bottom', as.numeric(seq(from = 1, to = 5, by = 1 )))
+class(t[5])
+ibjet <- "65a"
+class(as.numeric(ibjet))
+
+
+
+c <- map_profile_integration(simulation =  lsimu, parameter = "pdepth", depth = "surface", above = T, main = "carte B1c")
 c
 min(lsimu$depth, na.rm = T)
+
+lsimu$latbnd[1,]
+lsimu$lonbnd[1,]
   # Trouver les indices 
   # si la derniere case + 1/2 x la taille de la case < 100 il faut ajouter une case
   # Verfier dans le cas improbable ou la case proche de 99 ne dépasse pas 100
