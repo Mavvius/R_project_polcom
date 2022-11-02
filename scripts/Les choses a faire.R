@@ -10,11 +10,6 @@
 ##################
 
 
-lsimu$P1c[55,55,]
-sum(which(lsimu$depth[55,55,] < -100))
-?sum
-
-lsimu$depth[55,55,][31]
 
 # Permet de trouver quels valeurs satisfont une condition (indice)
 vect_dep<- which(lsimu$depth[55,55,] < -100)
@@ -22,19 +17,7 @@ lsimu$depth[55,55,][31] # indice de la valeur voulue
 sum(lsimu$depth[55,55,][vect_dep])
 
 
-temp <- which(lsimu$ETW[,,] > 17)
-sum(lsimu$ETW[,,][temp])
-str(lsimu$ETW)
-dim(lsimu$ETW[,,])[1]
-
 sum_vect <- vector()
-
-for( i in 1:dim(lsimu$ETW)[1]){
-  for (j in 1:dim(lsimu$ETW)[2]){
-    som <- sum(lsimu$ETW[i,j,], na.rm = F)
-    sum_vect <- append(sum_vect, som)
-  }
-}
 ?append
 plot(sum_vect)
 
@@ -88,14 +71,58 @@ lsimu$depth[55,55,] > -100
 
 # protocole dans l'ordre
 lsimu$pdepth[55,55,] # la taille des cases a une coordonnées 
-interval <- lsimu$depth[,1:100,] # La valeur a chaque point, représentant la moyenne de la case 
+interval <- lsimu$pdepth # La valeur a chaque point, représentant la moyenne de la case 
 sum(lsimu$pdepth[55,55,]) # Véritable profondeur pour un intervalle donné
 gc(reset = T)
+which(interval > -100)
 st<- Sys.time()
 test <- apply(interval, MARGIN = c(1:2),function(x)which(x> -100)) # indices des profondeurs au dessus d'un seuil
+test[55,55]
 end <- Sys.time()
 end - st
 
+
+smin <- interval[1:55,1:55,]
+smte <- test[1:55,1:55]
+interval[1:55,1:55,][unlist(test[1:55,1:55])]
+
+newar<- array(numeric(), c(55,55,1))
+newar[55,55,] <- length(smin[55,55,][unlist(smte[55,55])])
+
+smin[55,55,][unlist(smte[55,55])]
+
+smte[55,55]
+
+length(unlist(smte[1,1])) != 0
+summary(smte)
+
+newar <- array(numeric(), c(dim(smin)[1],dim(smin)[2],2))
+newar <- apply(newar,  c(1:2), )
+
+
+for (i in 1:dim(smin)[1]) {
+  for (j in 1:dim(smin)[2]) {
+    if (length(unlist(smte[i,j])) != 0 ) newar[i,j,] <- smin[i,j,][unlist(smte[i,j])] 
+  }
+}
+newar[1,1,] <- 1:10
+
+sum(c(1:8, NA, NA, NA, NA, 8:12), na.rm = T)
+
+
+dim(interval)[1]
+
+class(test[65,65])
+interval[65,65,]
+
+length(lsimu$pdepth[65,65,][unlist(test[65,65])])
+
+interval <- interval[,,][unlist(test)][55]
+dim(test)
+image.plot(interval)
+
+
+class(c(1:29))
 
 var(lsimu$pdepth[55,55,]) # verification que la taille des cases est uniques. 
 max(abs(lsimu$depth), na.rm =T)
