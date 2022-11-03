@@ -12,22 +12,6 @@
 
 
 # Permet de trouver quels valeurs satisfont une condition (indice)
-vect_dep<- which(lsimu$depth[55,55,] < -100)
-lsimu$depth[55,55,][31] # indice de la valeur voulue
-sum(lsimu$depth[55,55,][vect_dep])
-
-
-sum_vect <- vector()
-?append
-plot(sum_vect)
-
-lsimu$ETW[55,55,4]
-
-ma <- matrix(c(1:24), ncol = 3, nrow = 8)
-
-ma
-apply(ma, 1, table)  #--> a list of length 2
-apply(ma, 1, stats::quantile) # 5 
 
 température <- lsimu$ETW[50:55, 50:55, ]
 température
@@ -36,8 +20,6 @@ mapply(sum(x), température[,,x], dim(température)[3])
 température[1,1,]
 sum(température[1,1,])
 apply(température, c(1:2),sum) # Ca fonctionne 
-?apply
-
 
 sum(température[6,6,])
 
@@ -46,10 +28,8 @@ integration_verticale <- function(simulation, parameter, above, below, area )
 cell_depth <- lsimu$pdepth
 cell_depth[62,28,]
   
-dim(lsimu$pdepth)
 
-
-sum(lsimu$pdepth[121,121,][which(lsimu$depth[121,121,] > -100)])
+sum(lsimu$pdepth[65,65,][which(lsimu$depth[65,65,] > -95)])
 lol <- map_position(lsimu, longitude = -0, latitude = 55)
 conversion_coordonnee(lsimu, longitude = -0, latitude = 55)
 
@@ -58,7 +38,8 @@ profond<- lsimu$pdepth[55,55,]
 index <- which(lsimu$depth[55,55,] > -100)
 which(lsimu$depth[55,55,]> -100)
 
-
+class(lsimu$depth)
+?array
 
 sum(lsimu$pdepth[55,55,][index]) -100
 lsimu$pdepth[55,55,][length(index)-1]
@@ -71,45 +52,48 @@ lsimu$depth[55,55,] > -100
 
 # protocole dans l'ordre
 lsimu$pdepth[55,55,] # la taille des cases a une coordonnées 
-interval <- lsimu$pdepth # La valeur a chaque point, représentant la moyenne de la case 
 sum(lsimu$pdepth[55,55,]) # Véritable profondeur pour un intervalle donné
 gc(reset = T)
 which(interval > -100)
 st<- Sys.time()
-test <- apply(interval, MARGIN = c(1:2),function(x)which(x> -100)) # indices des profondeurs au dessus d'un seuil
 test[55,55]
 end <- Sys.time()
 end - st
 
 
+interval <- abs(lsimu$depth) # La valeur a chaque point, représentant la moyenne de la case 
+intercase <- lsimu$pdepth
+test <- apply(interval, MARGIN = c(1:2),function(x)which(x< 100)) # indices des profondeurs au dessus d'un seuil
+
 smin <- interval[1:55,1:55,]
 smte <- test[1:55,1:55]
-interval[1:55,1:55,][unlist(test[1:55,1:55])]
-
-newar<- array(numeric(), c(55,55,1))
-newar[55,55,] <- length(smin[55,55,][unlist(smte[55,55])])
-
+smic <- intercase[1:55,1:55,]
 smin[55,55,][unlist(smte[55,55])]
 
-smte[55,55]
+newar<- array(numeric(), c(55,55,1))
 
-length(unlist(smte[1,1])) != 0
-summary(smte)
+sum(smin[55,55,][unlist(smte[55,55])])
+smin[55,55,][40] > 100
 
 newar <- array(numeric(), c(dim(smin)[1],dim(smin)[2],2))
 newar <- apply(newar,  c(1:2), )
-
+count <- 0
 
 for (i in 1:dim(smin)[1]) {
   for (j in 1:dim(smin)[2]) {
-    if (length(unlist(smte[i,j])) != 0 ) newar[i,j,] <- smin[i,j,][unlist(smte[i,j])] 
+    if (length(unlist(smte[i,j])) != 0 ){ 
+      newar[i,j,] <- sum(smic[i,j,][unlist(smte[i,j])])
+      if ((newar[i,j,] < 100) & (smin[i,j,][40] > 100)) count <- count +1   
+    } else newar[i,j,] <- NA
   }
 }
-newar[1,1,] <- 1:10
+newar[55,55,]
+count
 
-sum(c(1:8, NA, NA, NA, NA, 8:12), na.rm = T)
-
-
+larg <- list(c(1:55))
+long <- list(c(1:55))
+deuxD <- list(larg, long)
+?list
 dim(interval)[1]
 
 class(test[65,65])
@@ -157,16 +141,18 @@ map_profile_integration <- function(simulation, parameter,depth = c('surface','b
     depth <- match.arg(depth)
     switch (depth,
       surface = depth <- 1,
-      bottom = depth <- 40,
+      bottom = depth <- 40, # Si on définit autrement la couche de mélange on verra comment faire.  
     )
     return(map_profile(simulation =  simulation, parameter = parameter, depth = depth, main = main))
   }
   if(is.numeric(depth)){ 
-    depth <- abs(depth)
-    simu_depth <- abs(simulation[["depth"]])
-    max_depth <- max(abs(simulation[["depth"]]), na.rm = T)
+    depth <- abs(depth)  # Profondeur demandée
+    simu_depth <- abs(simulation[["depth"]]) # Profondeur du modèle
+
+    max_depth <- max(abs(simulation[["depth"]]), na.rm = T) # Profondeur max pour determiner les limites. 
     if( depth > max_depth) return(c("Out of bounds, please enter depth below :", round(max_depth,2)))
-    cube_size <- simulation[["pdepth"]]
+
+    cube_size <- simulation[["pdepth"]] # Hauteur de la grille si max_depth < 150 égale sinon augmente non linéaire
     # return(simu_depth)
     vecs_to_integrate <- apply(simu_depth, MARGIN = c(1:2) , function(x)which(x <  depth))# Les vecteur qui remplissent la condition de taille pour l'intégration. 
     return(vecs_to_integrate)
