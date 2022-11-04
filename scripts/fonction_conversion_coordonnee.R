@@ -39,6 +39,7 @@ lsimu<-lapply(lsimu,missvalf)
 ################################################################################
 conversion_coordonnee <- function(simulation, longitude, latitude, depth=0){
     # Extract the values 
+  #depth <- - abs(depth) # a tester plutot que le if du dessous
   if(depth > 0){depth <- -depth} # For now the depth is at 0 by default potential  future modif
   lat <- simulation[["latbnd"]][1,]
   lon <- simulation[["lonbnd"]][1,]
