@@ -63,7 +63,7 @@ end - st
 
 interval <- abs(lsimu$depth) # La valeur a chaque point, représentant la moyenne de la case 
 intercase <- lsimu$pdepth
-test <- apply(interval, MARGIN = c(1:2),function(x)which(x< 100)) # indices des profondeurs au dessus d'un seuil
+test <- apply(interval, MARGIN = c(1:2),function(x)which(x < 100)) # indices des profondeurs au dessus d'un seuil
 
 smin <- interval[1:55,1:55,]
 smte <- test[1:55,1:55]
@@ -72,23 +72,38 @@ smin[55,55,][unlist(smte[55,55])]
 
 newar<- array(numeric(), c(55,55,1))
 
-sum(smin[55,55,][unlist(smte[55,55])])
+sum(smin[55,55,][1:(length(unlist(smte[55,55]))+1)])
 smin[55,55,][40] > 100
-
+length(unlist(smte[55,55]))
+1:(length(unlist(smte[55,55]))+1) # Permet d'acceder a la case d'après ou d'avant -1
 newar <- array(numeric(), c(dim(smin)[1],dim(smin)[2],2))
 newar <- apply(newar,  c(1:2), )
 count <- 0
 
-for (i in 1:dim(smin)[1]) {
-  for (j in 1:dim(smin)[2]) {
-    if (length(unlist(smte[i,j])) != 0 ){ 
-      newar[i,j,] <- sum(smic[i,j,][unlist(smte[i,j])])
-      if ((newar[i,j,] < 100) & (smin[i,j,][40] > 100)) count <- count +1   
-    } else newar[i,j,] <- NA
-  }
+for (i in 1:dim(smin)[1]) { # Longitude
+  for (j in 1:dim(smin)[2]) { # Latitude
+    if (length(unlist(smte[i,j])) != 0 ) { # Eviter les NA 
+      newar[i,j,] <- sum(smic[i,j,][unlist(smte[i,j])]) # Somme des cases le plus proches du seuil
+      if (newar[i,j,] > 100) { # Si case en trop ou derniere case trop grande
+       dif <- newar[i,j,] -100
+       lich <- smic[i,j,][length(unlist(smte[i,j]))] - dif
+       #print(c("L :",lich))
+       newar[i,j,] <- sum(smic[i,j,][1:(length(unlist(smte[i,j]))-1)]) + lich }
+      else if ((newar[i,j,] < 100) &  (smic[i,j,][40] > 100)){ # S'il manque une case
+        dif <- abs(newar[i,j,] - 100) # la quantité manquante
+        lich <- smic[i,j,][length(unlist(smte[i,j]))+1] - dif # la case en plus
+       
+        newar[i,j,] <- newar[i,j,]  + lich }
+      } #else newar[i,j,] <- NA
+    } 
 }
-newar[55,55,]
-count
+
+?weighted.mean
+
+map_profile(newar, "dim", depth = 12)
+attributes(newar)
+
+plot(newar)
 
 larg <- list(c(1:55))
 long <- list(c(1:55))
