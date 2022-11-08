@@ -65,10 +65,12 @@ interval <- abs(lsimu$depth) # La valeur a chaque point, représentant la moyenn
 intercase <- lsimu$pdepth
 test <- apply(interval, MARGIN = c(1:2),function(x)which(x < 100)) # indices des profondeurs au dessus d'un seuil
 
-smin <- interval[1:55,1:55,]
-smte <- test[1:55,1:55]
-smic <- intercase[1:55,1:55,]
+smin <- interval[1:55,1:55,] # valeurs de profondeur
+smte <- test[1:55,1:55] # indices qui remplissent la condition < 100 
+smic <- intercase[1:55,1:55,] # Pdepth
 smin[55,55,][unlist(smte[55,55])]
+
+
 
 newar<- array(numeric(), c(55,55,1))
 
@@ -79,6 +81,7 @@ length(unlist(smte[55,55]))
 newar <- array(numeric(), c(dim(smin)[1],dim(smin)[2],2))
 newar <- apply(newar,  c(1:2), )
 count <- 0
+count_petits <- 0 
 
 for (i in 1:dim(smin)[1]) { # Longitude
   for (j in 1:dim(smin)[2]) { # Latitude
@@ -88,23 +91,26 @@ for (i in 1:dim(smin)[1]) { # Longitude
        dif <- newar[i,j,] -100
        lich <- smic[i,j,][length(unlist(smte[i,j]))] - dif
        #print(c("L :",lich))
-       newar[i,j,] <- sum(smic[i,j,][1:(length(unlist(smte[i,j]))-1)]) + lich }
-      else if ((newar[i,j,] < 100) &  (smic[i,j,][40] > 100)){ # S'il manque une case
+       newar[i,j,] <- sum(smic[i,j,][1:(length(unlist(smte[i,j]))-1)]) +lich }
+      else if ((newar[i,j,] < 100) & (smic[i,j,][40] > 100)){ # S'il manque une case
+        count <- count +1
         dif <- abs(newar[i,j,] - 100) # la quantité manquante
+        #print(c("d :",dif))
         lich <- smic[i,j,][length(unlist(smte[i,j]))+1] - dif # la case en plus
-       
-        newar[i,j,] <- newar[i,j,]  + lich }
-      } #else newar[i,j,] <- NA
+        print(c("L :",lich))
+        newar[i,j,] <- newar[i,j,] +dif }
+      #else newar[i,j,] <- NA 
+      } #
     } 
 }
 
-?weighted.mean
+?weighted.sum
+sum(x * w, na.rm = T) # Some pondéré. On pourra faire la somme des valeurs du var avec la taille des cases comme ça. 
 
-map_profile(newar, "dim", depth = 12)
-attributes(newar)
+
 
 plot(newar)
-
+summary(smic)
 larg <- list(c(1:55))
 long <- list(c(1:55))
 deuxD <- list(larg, long)
