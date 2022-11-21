@@ -61,15 +61,10 @@ end <- Sys.time()
 end - st
 
 
-interval <- abs(lsimu$depth) # La valeur a chaque point, représentant la moyenne de la case 
-intercase <- lsimu$pdepth
-test <- apply(interval, MARGIN = c(1:2),function(x)which(x < 100)) # indices des profondeurs au dessus d'un seuil
 
-smin <- interval[1:55,1:55,] # valeurs de profondeur
-smte <- test[1:55,1:55] # indices qui remplissent la condition < 100 
-smic <- intercase[1:55,1:55,] # Pdepth
 smin[55,55,][unlist(smte[55,55])]
 
+smic[55,55,][1:length((unlist(smte[55,55])))]
 
 
 newar<- array(numeric(), c(55,55,1))
@@ -78,38 +73,21 @@ sum(smin[55,55,][1:(length(unlist(smte[55,55]))+1)])
 smin[55,55,][40] > 100
 length(unlist(smte[55,55]))
 1:(length(unlist(smte[55,55]))+1) # Permet d'acceder a la case d'après ou d'avant -1
-newar <- array(numeric(), c(dim(smin)[1],dim(smin)[2],2))
+newar <- array(numeric(), c(dim(smin)[1],dim(smin)[2],1))
 newar <- apply(newar,  c(1:2), )
 count <- 0
 count_petits <- 0 
 
-for (i in 1:dim(smin)[1]) { # Longitude
-  for (j in 1:dim(smin)[2]) { # Latitude
-    if (length(unlist(smte[i,j])) != 0 ) { # Eviter les NA 
-      newar[i,j,] <- sum(smic[i,j,][unlist(smte[i,j])]) # Somme des cases le plus proches du seuil
-      if (newar[i,j,] > 100) { # Si case en trop ou derniere case trop grande
-       dif <- newar[i,j,] -100
-       lich <- smic[i,j,][length(unlist(smte[i,j]))] - dif
-       #print(c("L :",lich))
-       newar[i,j,] <- sum(smic[i,j,][1:(length(unlist(smte[i,j]))-1)]) +lich }
-      else if ((newar[i,j,] < 100) & (smic[i,j,][40] > 100)){ # S'il manque une case
-        count <- count +1
-        dif <- abs(newar[i,j,] - 100) # la quantité manquante
-        #print(c("d :",dif))
-        lich <- smic[i,j,][length(unlist(smte[i,j]))+1] - dif # la case en plus
-        print(c("L :",lich))
-        newar[i,j,] <- newar[i,j,] +dif }
-      #else newar[i,j,] <- NA 
-      } #
-    } 
-}
+
+
+# smic[i,j,][1:(length(unlist(smte[i,j]))-1)] Le liste des trucs a multiplier. 
 
 ?weighted.sum
 sum(x * w, na.rm = T) # Some pondéré. On pourra faire la somme des valeurs du var avec la taille des cases comme ça. 
 
 
 
-plot(newar)
+dim(newar)
 summary(smic)
 larg <- list(c(1:55))
 long <- list(c(1:55))
@@ -160,30 +138,122 @@ map_profile_integration <- function(simulation, parameter,depth = c('surface','b
   # test the depth parameter ## Fait comme ca pour l'instant. Mais trouver un meilleur moyen
   if(is.character(depth)){
     depth <- match.arg(depth)
-    switch (depth,
+    ### Si on demande la couche de surface ou de profondeur on prend la 1ère ou 
+    ###la dernière case. A mon avis pertinent pour le fond mais pas pour la surface.
+    ### Parcontre genere des erreurs selon la taille des cellules prises. s
+    switch (depth, 
       surface = depth <- 1,
       bottom = depth <- 40, # Si on définit autrement la couche de mélange on verra comment faire.  
     )
     return(map_profile(simulation =  simulation, parameter = parameter, depth = depth, main = main))
   }
+  
   if(is.numeric(depth)){ 
     depth <- abs(depth)  # Profondeur demandée
-    simu_depth <- abs(simulation[["depth"]]) # Profondeur du modèle
+    ##1. Valeur de profondeur du modèle
+    simu_depth <- abs(simulation[["depth"]]) 
 
     max_depth <- max(abs(simulation[["depth"]]), na.rm = T) # Profondeur max pour determiner les limites. 
     if( depth > max_depth) return(c("Out of bounds, please enter depth below :", round(max_depth,2)))
 
-    cube_size <- simulation[["pdepth"]] # Hauteur de la grille si max_depth < 150 égale sinon augmente non linéaire
     # return(simu_depth)
-    vecs_to_integrate <- apply(simu_depth, MARGIN = c(1:2) , function(x)which(x <  depth))# Les vecteur qui remplissent la condition de taille pour l'intégration. 
-    return(vecs_to_integrate)
+    ##2. Les vecteur qui remplissent le prérequis de profondeur.
+    vecs_to_integrate <- apply(simu_depth, MARGIN = c(1:2) , function(x)which(x <  depth)) 
+    
+    ##3. La hauteur des cellules du modèle pour chaque coordonnée
+    # Hauteur de la grille si max_depth < 150 égale sinon augmente non linéaire
+    cube_size <- simulation[["pdepth"]] 
+    
+    ##4. Les valeurs pour le paramètre d'interet
+    simu_val <- simulation[[parameter]]
+    
+    newar<- array(numeric(), c(dim(simu_depth)[1],dim(simu_depth)[2],1))
+    map_val_output<- array(numeric(), c(dim(simu_depth)[1],dim(simu_depth)[2],1))
+    
+    ##### Le test de seuil pour l'integration verticale. #####
+    for (i in 1:dim(simu_depth)[1]) { # Longitude
+      for (j in 1:dim(simu_depth)[2]) { # Latitude
+        if (length(unlist(vecs_to_integrate[i,j])) != 0 ) { # Eviter les NA 
+          # Somme des cases le plus proches du seuil
+          # Vectors of cube size for matching depth values
+          water_col <- cube_size[i,j,][unlist(vecs_to_integrate[i,j])]
+          newar[i,j,] <- sum(water_col)
+          
+          # Si case en trop ou derniere case trop grande
+          if (newar[i,j,] > depth) {
+            dif <- newar[i,j,] - depth
+            lich <- cube_size[i,j,][length(unlist(vecs_to_integrate[i,j]))] - dif
+            newar[i,j,] <- sum(cube_size[i,j,][1:(length(unlist(vecs_to_integrate[i,j]))-1)]) +lich }
+            
+          # S'il manque une case
+          else if ((newar[i,j,] < depth) & (cube_size[i,j,][40] > depth)){ 
+            count <- count +1
+            dif <- abs(newar[i,j,] - depth) # la quantité manquante
+            lich <- cube_size[i,j,][length(unlist(vecs_to_integrate[i,j]))+1] - dif # la case en plus
+            newar[i,j,] <- newar[i,j,] +dif }
+          
+        } 
+      } 
+    }
+    
+    return(simu_val[55,55,])
     }
   }
 
-    
-c <- map_profile_integration(simulation =  lsimu, parameter = "pdepth", depth = 8,
+c <- map_profile_integration(simulation =  lsimu, parameter = "B1c", depth = 8,
                              above = T, main = "carte B1c")
 c
+
+
+interval <- abs(lsimu$depth) # La valeur a chaque point, représentant la moyenne de la case 
+intercase <- lsimu$pdepth
+test <- apply(interval, MARGIN = c(1:2),function(x)which(x < 100)) # indices des profondeurs au dessus d'un seuil
+phyto <- lsimu$P1c[55,55,]
+
+
+smin <- interval[1:55,1:55,] # valeurs de profondeur
+smte <- test[1:55,1:55] # indices qui remplissent la condition < 100 
+smic <- intercase[1:55,1:55,] # Pdepth
+
+##### Le test de seuil pour l'integration verticale. #####
+for (i in 1:dim(smin)[1]) { # Longitude
+  for (j in 1:dim(smin)[2]) { # Latitude
+    if (length(unlist(smte[i,j])) != 0 ) { # Eviter les NA 
+      newar[i,j,] <- sum(smic[i,j,][unlist(smte[i,j])]) # Somme des cases le plus proches du seuil
+      if (newar[i,j,] > 100) { # Si case en trop ou derniere case trop grande
+        dif <- newar[i,j,] -100
+        lich <- smic[i,j,][length(unlist(smte[i,j]))] - dif
+        print(lsimu$pdepth[i,j,][unlist(smte[i,j])])
+        newar[i,j,] <- sum(smic[i,j,][1:(length(unlist(smte[i,j]))-1)]) +lich }
+      else if ((newar[i,j,] < 100) & (smic[i,j,][40] > 100)){ # S'il manque une case
+        count <- count +1
+        dif <- abs(newar[i,j,] - 100) # la quantité manquante
+        #print(c("d :",dif))
+        lich <- smic[i,j,][length(unlist(smte[i,j]))+1] - dif # la case en plus
+        print(c("L :",lich))
+        newar[i,j,] <- newar[i,j,] +dif }
+      
+    } 
+  } 
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 p <- geom_freqpoly(mean(lsimu$pdepth, na.rm =T), )
 p

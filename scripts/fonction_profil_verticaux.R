@@ -102,18 +102,3 @@ vertical_profile(lsimu, "P1c", longitude = -2 , latitude = 45.65, xlab = "Tempé
 # }
 # vertical_profile_ori(lsimu, "ETW", longitude =55 , latitude = 55, xlab = "Temperatour")
 
-
-
-
-
-# 64 out of bounds
-# 47 nanana
-# 
-# 45.65 -9.35 ok
-# 
-# range(lsimu$lonbnd)
-# lsimu$ETW[95,140,]
-# lsimu$pdepth[120,120,]
-# 
-# 
-# lsimu$ETW[120,120,]
