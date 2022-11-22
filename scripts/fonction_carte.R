@@ -50,15 +50,17 @@ map_profile <- function(simulation, parameter,depth = 0,  main = "Titre"){
   if(depth < 1) return("Please enter the depth (positive)")
   measure <- simulation[[parameter]][,,depth]
     # Limits of the map. 
-  lat<-apply(lsimu$latbnd,2,mean)
-  lon<-apply(lsimu$lonbnd,2,mean)
+  lat<-apply(simulation[["latbnd"]],2,mean)
+  lon<-apply(simulation[["lonbnd"]],2,mean)
     #plot
   plot <- image.plot(measure, x=lon, y=lat, main = main)
-#  return(plot)
+  return(measure)
 }
 
 
-map_profile(simulation =  lsimu, parameter = "pdepth", depth = 1, main = "carte B1c")
+d <- map_profile(simulation =  lsimu, parameter = "B1c", depth = 1, main = "carte B1c")
+dim(c)
+c[55,55,]
 
 max(lsimu$B1c, na.rm = T)
 

@@ -52,7 +52,8 @@ map_position <- function(simulation, longitude, latitude, main = "* You are here
     return(plot)
 }
 dev.new()
-lol <- map_position(lsimu, longitude = -0, latitude = 55)
+
+lol <- map_position(lsimu, longitude = -2, latitude = 50)
 lol
 lsimu$depth[55,55,]
 dev.new()

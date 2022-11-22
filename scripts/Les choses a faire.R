@@ -147,18 +147,18 @@ map_profile_integration <- function(simulation, parameter,depth = c('surface','b
     )
     return(map_profile(simulation =  simulation, parameter = parameter, depth = depth, main = main))
   }
-  
   if(is.numeric(depth)){ 
     depth <- abs(depth)  # Profondeur demandée
     ##1. Valeur de profondeur du modèle
     simu_depth <- abs(simulation[["depth"]]) 
 
     max_depth <- max(abs(simulation[["depth"]]), na.rm = T) # Profondeur max pour determiner les limites. 
+
     if( depth > max_depth) return(c("Out of bounds, please enter depth below :", round(max_depth,2)))
 
     # return(simu_depth)
     ##2. Les vecteur qui remplissent le prérequis de profondeur.
-    vecs_to_integrate <- apply(simu_depth, MARGIN = c(1:2) , function(x)which(x <  depth)) 
+    index_vect_under_threshold <- apply(simu_depth, MARGIN = c(1:2) , function(x)which(x < depth)) 
     
     ##3. La hauteur des cellules du modèle pour chaque coordonnée
     # Hauteur de la grille si max_depth < 150 égale sinon augmente non linéaire
@@ -167,49 +167,65 @@ map_profile_integration <- function(simulation, parameter,depth = c('surface','b
     ##4. Les valeurs pour le paramètre d'interet
     simu_val <- simulation[[parameter]]
     
-    newar<- array(numeric(), c(dim(simu_depth)[1],dim(simu_depth)[2],1))
-    map_val_output<- array(numeric(), c(dim(simu_depth)[1],dim(simu_depth)[2],1))
+    cumul_depth<- array(numeric(), c(dim(simu_depth)[1],dim(simu_depth)[2],1))
+    map_val_output<- array(numeric(), c(dim(simu_depth)[1],dim(simu_depth)[2]))
     
     ##### Le test de seuil pour l'integration verticale. #####
     for (i in 1:dim(simu_depth)[1]) { # Longitude
       for (j in 1:dim(simu_depth)[2]) { # Latitude
-        if (length(unlist(vecs_to_integrate[i,j])) != 0 ) { # Eviter les NA 
+        #print(j)
+        last_index <- length(unlist(index_vect_under_threshold[i,j]))
+        ##################################################### jusqu'ici tout va bien 
+        
+        if (last_index != 0 ) { # Eviter les NA 
           # Somme des cases le plus proches du seuil
           # Vectors of cube size for matching depth values
-          water_col <- cube_size[i,j,][unlist(vecs_to_integrate[i,j])]
-          newar[i,j,] <- sum(water_col)
+          water_col <- cube_size[i,j,][1:last_index]
+          cumul_depth[i,j,] <- sum(water_col)
           
           # Si case en trop ou derniere case trop grande
-          if (newar[i,j,] > depth) {
-            dif <- newar[i,j,] - depth
-            lich <- cube_size[i,j,][length(unlist(vecs_to_integrate[i,j]))] - dif
-            newar[i,j,] <- sum(cube_size[i,j,][1:(length(unlist(vecs_to_integrate[i,j]))-1)]) +lich }
-            
+          if (cumul_depth[i,j,] > depth) {
+            dif <- cumul_depth[i,j,] - depth
+            lich <- cube_size[i,j,][last_index] - dif
+         #   cumul_depth[i,j,] <- sum(cube_size[i,j,][1:(last_index)-1)]) +lich
+            map_val_output[i,j] <- sum(simu_val[i,j,][1:(last_index-1)] * cube_size[i,j,][1:(last_index-1)]) + (lich * simu_val[i,j,][(last_index)])    
+          }
           # S'il manque une case
-          else if ((newar[i,j,] < depth) & (cube_size[i,j,][40] > depth)){ 
-            count <- count +1
-            dif <- abs(newar[i,j,] - depth) # la quantité manquante
-            lich <- cube_size[i,j,][length(unlist(vecs_to_integrate[i,j]))+1] - dif # la case en plus
-            newar[i,j,] <- newar[i,j,] +dif }
-          
-        } 
+          else if ((cumul_depth[i,j,] < depth) & (simu_depth[i,j,][40] > depth)){ 
+            dif <- abs(cumul_depth[i,j,] - depth) # la quantité manquante
+            lich <- cube_size[i,j,][last_index+1] - dif # la case en plus
+            cumul_depth[i,j,] <- cumul_depth[i,j,] +dif 
+            map_val_output[i,j] <- sum(simu_val[i,j,][1:(last_index-1)] * cube_size[i,j,][1:(last_index-1)]) + (lich * simu_val[i,j,][(last_index)])
+            if(is.infinite(map_val_output[i,j])) return(1)
+          }        
+        } else map_val_output[i,j] <- sum(simu_val[i,j,])
       } 
     }
     
-    return(simu_val[55,55,])
+    # Limits of the map. 
+    lat<-apply(simulation[["latbnd"]],2,mean)
+    lon<-apply(simulation[["lonbnd"]],2,mean)
+    #return(map_val_output)
+    plot <- image.plot(map_val_output, x=lon, y=lat, main = main)
+      
+    return(map_val_output)
     }
   }
 
-c <- map_profile_integration(simulation =  lsimu, parameter = "B1c", depth = 8,
-                             above = T, main = "carte B1c")
-c
-
-
+c <- map_profile_integration(simulation =  lsimu, parameter = "depth", depth = 100, above = T, main = "carte B1c")
+summary(c)
+c[101,71]
+sum(lsimu$depth[101,71,])
+image.plot(c)
+dim(lsimu$P1c[,,][,,40])
+?image.plot
 interval <- abs(lsimu$depth) # La valeur a chaque point, représentant la moyenne de la case 
 intercase <- lsimu$pdepth
 test <- apply(interval, MARGIN = c(1:2),function(x)which(x < 100)) # indices des profondeurs au dessus d'un seuil
-phyto <- lsimu$P1c[55,55,]
+phyto <- lsimu$P1c[1:55,1:55,]
 
+sum(phyto[1:29] *smic[55,55,][1:29])
+newar <- array(numeric(), c(dim(smin)[1],dim(smin)[2],1))
 
 smin <- interval[1:55,1:55,] # valeurs de profondeur
 smte <- test[1:55,1:55] # indices qui remplissent la condition < 100 
@@ -218,18 +234,19 @@ smic <- intercase[1:55,1:55,] # Pdepth
 ##### Le test de seuil pour l'integration verticale. #####
 for (i in 1:dim(smin)[1]) { # Longitude
   for (j in 1:dim(smin)[2]) { # Latitude
-    if (length(unlist(smte[i,j])) != 0 ) { # Eviter les NA 
+    vec_size <- length(unlist(smte[i,j]))
+    if (vec_size != 0 ) { # Eviter les NA 
       newar[i,j,] <- sum(smic[i,j,][unlist(smte[i,j])]) # Somme des cases le plus proches du seuil
       if (newar[i,j,] > 100) { # Si case en trop ou derniere case trop grande
         dif <- newar[i,j,] -100
-        lich <- smic[i,j,][length(unlist(smte[i,j]))] - dif
-        print(lsimu$pdepth[i,j,][unlist(smte[i,j])])
-        newar[i,j,] <- sum(smic[i,j,][1:(length(unlist(smte[i,j]))-1)]) +lich }
+        lich <- smic[i,j,][vec_size] - dif
+  #      print(lsimu$pdepth[i,j,][unlist(smte[i,j])])
+        newar[i,j,] <- sum(smic[i,j,][1:(vec_size-1)]) +lich }
       else if ((newar[i,j,] < 100) & (smic[i,j,][40] > 100)){ # S'il manque une case
-        count <- count +1
+       # count <- count +1
         dif <- abs(newar[i,j,] - 100) # la quantité manquante
         #print(c("d :",dif))
-        lich <- smic[i,j,][length(unlist(smte[i,j]))+1] - dif # la case en plus
+        lich <- smic[i,j,][vec_size+1] - dif # la case en plus
         print(c("L :",lich))
         newar[i,j,] <- newar[i,j,] +dif }
       
@@ -237,11 +254,9 @@ for (i in 1:dim(smin)[1]) { # Longitude
   } 
 }
 
+plot(phyto)
 
-
-
-
-
+truc <- 1:(length(unlist(smte[55,55]))+1)
 
 
 
