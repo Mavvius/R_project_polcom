@@ -197,8 +197,8 @@ map_profile_integration <- function(simulation, parameter,depth = c('surface','b
             cumul_depth[i,j,] <- cumul_depth[i,j,] +dif 
             map_val_output[i,j] <- sum(simu_val[i,j,][1:(last_index-1)] * cube_size[i,j,][1:(last_index-1)]) + (lich * simu_val[i,j,][(last_index)])
             if(is.infinite(map_val_output[i,j])) return(1)
-          }        
-        } else map_val_output[i,j] <- sum(simu_val[i,j,])
+          }else map_val_output[i,j] <- sum(simu_val[i,j,])        
+        } 
       } 
     }
     
@@ -212,10 +212,19 @@ map_profile_integration <- function(simulation, parameter,depth = c('surface','b
     }
   }
 
-c <- map_profile_integration(simulation =  lsimu, parameter = "depth", depth = 100, above = T, main = "carte B1c")
+c <- map_profile_integration(simulation =  lsimu, parameter = "B1c", depth = 20, above = T, main = "carte B1c")
 summary(c)
+lsimu$B1c[96,41,]
+lsimu$depth[96,41,]
+
+lsimu$B1c[11,121,]
+lsimu$depth[11,121,]
+
 c[101,71]
-sum(lsimu$depth[101,71,])
+sum(lsimu$depth[1,1,])
+length(lsimu$depth[1,1,])
+
+
 image.plot(c)
 dim(lsimu$P1c[,,][,,40])
 ?image.plot
@@ -235,13 +244,16 @@ smic <- intercase[1:55,1:55,] # Pdepth
 for (i in 1:dim(smin)[1]) { # Longitude
   for (j in 1:dim(smin)[2]) { # Latitude
     vec_size <- length(unlist(smte[i,j]))
+    
     if (vec_size != 0 ) { # Eviter les NA 
       newar[i,j,] <- sum(smic[i,j,][unlist(smte[i,j])]) # Somme des cases le plus proches du seuil
+      
       if (newar[i,j,] > 100) { # Si case en trop ou derniere case trop grande
         dif <- newar[i,j,] -100
         lich <- smic[i,j,][vec_size] - dif
   #      print(lsimu$pdepth[i,j,][unlist(smte[i,j])])
         newar[i,j,] <- sum(smic[i,j,][1:(vec_size-1)]) +lich }
+      
       else if ((newar[i,j,] < 100) & (smic[i,j,][40] > 100)){ # S'il manque une case
        # count <- count +1
         dif <- abs(newar[i,j,] - 100) # la quantité manquante

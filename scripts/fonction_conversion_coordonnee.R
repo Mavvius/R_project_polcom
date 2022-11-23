@@ -57,7 +57,7 @@ conversion_coordonnee <- function(simulation, longitude, latitude, depth=0){
   }
 }
 
-conv <- conversion_coordonnee(lsimu, longitude = -2, latitude = 50, 10)
+conv <- conversion_coordonnee(lsimu, longitude = -2.5, latitude = 47, 10)
 conv
 
 lsimu$depth[72,28,]
