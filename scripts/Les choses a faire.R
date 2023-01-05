@@ -212,7 +212,7 @@ map_profile_integration <- function(simulation, parameter,depth = c('surface','b
     }
   }
 
-c <- map_profile_integration(simulation =  lsimu, parameter = "B1c", depth = 20, above = T, main = "carte B1c")
+c <- map_profile_integration(simulation =  lsimu, parameter = "P2c", depth = 20, above = T, main = "P2c 20m")
 summary(c)
 lsimu$B1c[96,41,]
 lsimu$depth[96,41,]
