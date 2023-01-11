@@ -49,12 +49,13 @@ lsimu<-lapply(lsimu,missvalf)
 ################################################################################
 
 conv <- conversion_coordonnee(lsimu, longitude = -6, latitude = 48)
-conversion_coordonnee(lsimu, longitude = -2, latitude = 44.5)
+conversion_coordonnee(lsimu, longitude = -8, latitude = 48)
 conversion_coordonnee(lsimu, longitude = -1, latitude = 43)
 
 map_position(lsimu, longitude = -8, latitude = 48)
 
-lsimu$depth[c(c(42:111),c(62:111)), c(c(51:46),c(46:41)),1]
+lsimu$depth[c(42:111),c(51:46),1] == lsimu$depth[c(111:42),c(46:51),1] 
+lsimu$depth[c(42:111),c(51:46),1]
 lsimu$depth[111, 51,1]
 lsimu$lonbnd[1,111]
 lsimu$latbnd[1,51:46]
@@ -72,21 +73,79 @@ car2 = lsimu$depth[c(62:111), c(46:41),1]
 carf = car1 + car2
 str(car1)
 
-dim(lsimu)
-lapply(lsimu, function(el) if (length(dim(el)) == 3) el[1:12, 4:50, ] else NA)
+bob <- lapply(lsimu, function(el){
+  borne_lon <- c(42:111)
+  borne_lat <- c(51:1)
+  if (length(dim(el)) == 3) return(el[borne_lon, borne_lat,]) # P1c:Parea variables indexés lat lon profondeur
 
-# Fonction pour delimiter la zone. 
+  if (length(dim(el)) == 2){ 
+    if (dim(el)[1] == 2){ 
+      if (dim(el)[2] == 160) {return(el[,borne_lat])} # $latbnd
+      if (dim(el)[2] == 210) {return(el[,borne_lon])} # $lonbnd
+    }
+    else return(el[borne_lon, borne_lat]) # MLD Y(2:4)C variables indexées lat lon
+    
+  }
+  if (length(dim(el)) == 4) return(el[,borne_lon, borne_lat,]) # zbnd
+  })
 
-reduce_map <- function(el_in_simu, borne_lon, borne_lat, val){
-    if (length(dim(el_in_simu)) == 3) el_in_simu[borne_lon[1]:borne_lon[2], borne_lat[1]:borne_lat[2],]
-    if (length(dim(el_in_simu)) == 2) el_in_simu[borne_lon[1]:borne_lon[2], borne_lat[1]:borne_lat[2]]
-    if (length(dim(el_in_simu)) == 4) el_in_simu[borne_lon[1]:borne_lon[2], borne_lat[1]:borne_lat[2]]
-}
+####### Extrait un carré de donné dans une simulation plus grande ########
 
-dim(lsimu$zbnd)
+extract_area <- function(simulation, borne_lon, borne_lat, val){
+  small_map<- lapply(simulation, function(el){
+#    borne_lon <- c(42:111)
+#    borne_lat <- c(51:1)
+    if (length(dim(el)) == 3) return(el[borne_lon, borne_lat,]) # P1c:Parea variables indexés lat lon profondeur
+    
+    if (length(dim(el)) == 2){ 
+      if (dim(el)[1] == 2){ 
+        if (dim(el)[2] == 160) {return(el[,borne_lat])} # $latbnd
+        if (dim(el)[2] == 210) {return(el[,borne_lon])} # $lonbnd
+      }
+      else return(el[borne_lon, borne_lat]) # MLD Y(2:4)C variables indexées lat lon
+      
+    }
+    if (length(dim(el)) == 4) return(el[,borne_lon, borne_lat,]) # zbnd
+  })
+  return(small_map)
+  }
+
+##### Fonction pour enlever les petites zones une fois le crré extrait #####
+extrude_zone <- function(simulation, borne_lon, borne_lat, val=NA){
+  simulation <- lapply(simulation, function(el){
+    if (length(dim(el)) == 3){ 
+      el[borne_lon, borne_lat,] <- val
+      return(el)} # P1c:Parea variables indexés lat lon profondeur
+    
+    if (length(dim(el)) == 2){ 
+      if (dim(el)[1] == 2){ 
+        if (dim(el)[2] == 160) {
+          el[,borne_lat]<-  val
+          return(el)} # $latbnd
+        if (dim(el)[2] == 210) {
+          el[,borne_lon]<-  val
+          return(el)} # $lonbnd
+      }
+      else {
+      el[borne_lon, borne_lat] <-val 
+      return(el) # MLD Y(2:4)C variables indexées lat lon
+      }
+    }
+    if (length(dim(el)) == 4) {
+      el[,borne_lon, borne_lat,]<-val
+      return(el) # zbnd
+    }
+  })
+  return(simulation)
+  }
+
+em <- empty_map(lsimu, borne_lon = c(42:111), borne_lat =  c(51:1))
+em$latbnd[,51]
+
+truc <- lsimu
+truc$depth[, 42:43, 13:40]
+
 
 # Fonction pour vider les valeurs 
 # 
-# reduce_map <- function(simulation, borne_lon, borne_lat, val){
-#   
-# }
+# 
