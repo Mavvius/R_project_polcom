@@ -45,7 +45,7 @@ conversion_coordonnee <- function(simulation, longitude, latitude, depth=0){
   lon <- simulation[["lonbnd"]][1,]
     # Check if the values are within boundaries of the table
   if(!between(latitude, min(lat), max(lat)) | !between(longitude, min(lon), max(lon))){
-    return("Please enter longitude values between [-12.05 ; 8.95] and latitude values between [42.95 ; 58.95] ")
+    print("Please enter longitude values between [-12.05 ; 8.95] and latitude values between [42.95 ; 58.95] ")
    }else{
      # Find the nearest value rounded up for both coordinates
    case_lat <- which.min(abs(lat - latitude))
@@ -57,12 +57,9 @@ conversion_coordonnee <- function(simulation, longitude, latitude, depth=0){
   }
 }
 
-conv <- conversion_coordonnee(lsimu, longitude = -2.5, latitude = 47, 10)
+conv <- conversion_coordonnee(lsimu, longitude = -2.5, latitude = 47)
 conv
 
-lsimu$depth[72,28,]
-
-which.min(abs(lsimu$depth[72,28,] - (10)))
 
 # 
 # lsimu$ETW[1,1,]

@@ -46,9 +46,11 @@ lsimu<-lapply(lsimu,missvalf)
 ################################################################################
 ################################################################################
 
-map_profile <- function(simulation, parameter,depth = 0,  main = "Titre"){
-  if(depth < 1) return("Please enter the depth (positive)")
-  measure <- simulation[[parameter]][,,depth]
+map_profile <- function(simulation, parameter,layer = 0,  main = parameter){
+  if(layer < 1) return("Please enter the layer (positive)")
+  dimsim <- length(dim(simulation[[parameter]]))
+  if (dimsim == 3) {measure <- simulation[[parameter]][,,layer]}
+  if (dimsim == 2) {measure <- simulation[[parameter]][,]}
     # Limits of the map. 
   lat<-apply(simulation[["latbnd"]],2,mean)
   lon<-apply(simulation[["lonbnd"]],2,mean)
@@ -58,7 +60,7 @@ map_profile <- function(simulation, parameter,depth = 0,  main = "Titre"){
 }
 
 
-d <- map_profile(simulation =  lsimu, parameter = "B1c", depth = 1, main = "carte B1c")
+map_profile(simulation =  lsimu, parameter = "B1c", layer = 1, main = "carte B1c")
 dim(c)
 c[55,55,]
 

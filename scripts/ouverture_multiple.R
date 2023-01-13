@@ -1,6 +1,5 @@
 ################################################################################
-# Le but de la fonction est de convertir les données géographique en données
-# en cases sur la carte. 
+# Le but de la fonction est de pouvoir ouvrir et traiter plusieurs fichiers    #
 ################################################################################
 graphics.off()
 rm(list=ls())
@@ -12,7 +11,12 @@ library(ncdf4)
 library(fields)
 library(dplyr)
 library(tidyr)
+library(gridExtra)
 source("scripts/fonction_conversion_coordonnee.R")
+source("scripts/fonction_carte.R")
+source("scripts/fonction_vous_etes_ici.R")
+
+
 
 # POLCOM-ERSEM
 # Janvier 1985
@@ -20,9 +24,17 @@ source("scripts/fonction_conversion_coordonnee.R")
 ####### Exemple avec données minimales #########################################
 ################################################################################
 dirpolcom<-"data/"
-list.files(dirpolcom)
+folder_polcom = list.files(dirpolcom)
 
-ncf<-nc_open(paste0(dirpolcom,"CERES_outputs_IFREMER_Aug22.rcp85.2020.07.nc"))
+list_ncf <- list()
+
+for(i in seq_along(folder_polcom)){
+  
+}
+
+list("cat", "rabbit")
+
+ncf<-nc_open(paste0(dirpolcom,"CERES_outputs_IFREMER_Aug22.rcp85.2020.0.7.nc"))
 
 nm<-attributes(ncf$var)$names
 nm
@@ -39,21 +51,4 @@ missvalf<-function(x){
 }
 lsimu<-lapply(lsimu,missvalf)
 ################################################################################
-map_position <- function(simulation, longitude, latitude, main = "* You are here"){
-    # Limits of the map. 
-    lat<-apply(simulation[["latbnd"]],2,mean)
-    lon<-apply(simulation[["lonbnd"]],2,mean)
-    #plot
-    par(mfrow=c(1,1))
-    measure <- simulation[["P1c"]][,,1]
-    plot <- image(measure, x=lon, y=lat, main = main, col = "grey")
-    #plot <- image.plot(measure, x=lon, y=lat, main = main, legend.cex = 0)
-    points(x = longitude , y = latitude, pch = "*", cex=1.5, col="dark red")
-    return(plot)
-}
-
-
-map_position(lsimu, longitude = -5, latitude = 47)
-lol
-lsimu$depth[55,55,]
-
+################################################################################

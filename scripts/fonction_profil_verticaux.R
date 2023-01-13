@@ -78,7 +78,7 @@ vertical_profile <- function(simulation, parameter, longitude, latitude, xlab = 
 }
 
 
-vertical_profile(lsimu, "P1c", longitude = -2 , latitude = 45.65, xlab = "Température", position = T)
+vertical_profile(lsimu, "ETW", longitude = -5 , latitude = 46.65, xlab = "Température", position = T)
 
 #vertical_profile(lsimu, "ETW", longitude =43.6 , latitude = -4, xlab = "Temperatour")
 
